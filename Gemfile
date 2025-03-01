@@ -49,6 +49,8 @@ gem "validate_url"
 # Added gems for the assignment
 
 gem "smarter_csv"
+gem "kaminari"
+gem "bootstrap5-kaminari-views"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -66,6 +68,8 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "shoulda-matchers", "~> 6.0"
   gem "faker"
+  gem "capybara", "~> 3.40"
+  gem "selenium-webdriver", "~> 4.29"
 end
 
 group :development do

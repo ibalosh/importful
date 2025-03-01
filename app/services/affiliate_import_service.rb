@@ -47,23 +47,23 @@ class AffiliateImportService
   end
 
   def call
-    total_rows = 0
-    processed_rows = 0
-    failed_to_process_rows = 0
+    total_records = 0
+    processed_records = 0
+    not_processed_records = 0
 
     data_processor.process do |chunk|
-      total_rows += chunk.size
+      total_records += chunk.size
       formatted_affiliates = chunk_processor.format_chunk(chunk)
       inserted_count = insert(formatted_affiliates)
 
-      processed_rows += inserted_count
-      failed_to_process_rows += (chunk.size - inserted_count)
+      processed_records += inserted_count
+      not_processed_records += (chunk.size - inserted_count)
     end
 
-    result(total_rows:, processed_rows:, failed_to_process_rows:, status: :success)
+    result(total_records:, processed_records:, not_processed_records:, status: :success)
 
   rescue SmarterCSV::Error => e
-    result(total_rows:, processed_rows:, failed_to_process_rows:, status: :success, errors: [ e.message ])
+    result(total_records:, processed_records:, not_processed_records:, status: :success, errors: [ e.message ])
   end
 
   def insert(affiliates)
@@ -88,12 +88,12 @@ class AffiliateImportService
 
   attr_reader :data_processor, :chunk_processor
 
-  def result(total_rows:, processed_rows:, failed_to_process_rows:, status:, errors: [])
+  def result(total_records:, processed_records:, not_processed_records:, status:, errors: [])
     {
       status: {
-        total_rows:,
-        processed_rows:,
-        failed_to_process_rows:,
+        total_records:,
+        processed_records:,
+        not_processed_records:,
         status:
       },
       errors:

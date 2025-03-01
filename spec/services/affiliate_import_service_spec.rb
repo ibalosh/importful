@@ -15,9 +15,9 @@ RSpec.describe AffiliateImportService, type: :service do
       result = service.call
       aggregate_failures "verify errors" do
         expect(result[:errors].size).to be > 0
-        expect(result[:status][:total_rows]).to eq(0)
-        expect(result[:status][:processed_rows]).to eq(0)
-        expect(result[:status][:failed_to_process_rows]).to eq(0)
+        expect(result[:status][:total_records]).to eq(0)
+        expect(result[:status][:processed_records]).to eq(0)
+        expect(result[:status][:not_processed_records]).to eq(0)
       end
     end
 
