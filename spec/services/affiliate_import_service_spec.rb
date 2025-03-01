@@ -1,7 +1,7 @@
 require "rails_helper"
 require "stringio"
 
-RSpec.describe AffiliateImportService, type: :service do
+describe AffiliateImportService, type: :service do
   describe "#call" do
     it "raises an error - when missing headers" do
       csv_content = <<~CSV

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AffiliateImportService::ChunkProcessor do
+describe AffiliateImportService::ChunkProcessor do
   let(:merchant_finder) { instance_double(AffiliateImportService::MerchantFinder) }
   let(:chunk_processor) { described_class.new(merchant_finder) }
 

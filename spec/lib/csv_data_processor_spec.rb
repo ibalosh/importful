@@ -1,7 +1,7 @@
 require "rails_helper"
 require "stringio"
 
-RSpec.describe CsvDataProcessor do
+describe CsvDataProcessor do
   describe "#process" do
     it "parses the CSV file correctly" do
       csv_content = <<~CSV

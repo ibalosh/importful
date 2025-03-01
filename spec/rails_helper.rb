@@ -40,6 +40,12 @@ RSpec.configure do |config|
     Rails.root.join('spec/fixtures')
   ]
 
+  # when running tests, we might want to run jobs immediately
+  # to make testing easier of async jobs
+  config.before(:each, async: false) do
+    ActiveJob::Base.queue_adapter = :inline
+  end
+
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
