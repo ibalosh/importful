@@ -1,7 +1,9 @@
 class ImportsController < ApplicationController
   def create
-    # TODO: Implement CSV uploading
+    AffiliateImportService.new(import_file).call
+  end
 
-    raise NotImplementedError
+  def import_file
+    params.require(:file)
   end
 end

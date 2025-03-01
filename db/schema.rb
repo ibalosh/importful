@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_23_114217) do
   end
 
   create_table "merchants", force: :cascade do |t|
-    t.string "slug"
+    t.string "slug", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_merchants_on_slug", unique: true

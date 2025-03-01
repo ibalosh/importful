@@ -278,6 +278,7 @@ GEM
     securerandom (0.4.1)
     shoulda-matchers (6.4.0)
       activesupport (>= 5.2.0)
+    smarter_csv (1.13.1)
     solid_cable (3.0.5)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -371,6 +372,7 @@ DEPENDENCIES
   rspec-rails (~> 7.1.0)
   rubocop-rails-omakase
   shoulda-matchers (~> 6.0)
+  smarter_csv
   solid_cable
   solid_cache
   solid_queue
