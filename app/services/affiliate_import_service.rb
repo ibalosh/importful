@@ -6,7 +6,6 @@ class AffiliateImportService
     end
 
     private
-
     def extract_unique_merchants(records)
       records.map { |row| HashValueFormatter.new.format(
         row, AffiliateImport.data_formatting_details)[:merchant_slug]
@@ -60,10 +59,10 @@ class AffiliateImportService
       not_processed_records += (chunk.size - inserted_count)
     end
 
-    result(total_records:, processed_records:, not_processed_records:, status: :success)
+    result(total_records:, processed_records:, not_processed_records:, status: :finished)
 
   rescue SmarterCSV::Error => e
-    result(total_records:, processed_records:, not_processed_records:, status: :success, errors: [ e.message ])
+    result(total_records:, processed_records:, not_processed_records:, status: :failed, errors: [ e.message ])
   end
 
   def insert(affiliates)
