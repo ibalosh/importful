@@ -1,7 +1,7 @@
 class AffiliateImportService
   # @param file [String] path to the file
   def initialize(file)
-    @data_processor = AffiliateImport.data_processor(file)
+    @data_processor = CsvDataProcessor.new(file, options: { required_keys: AffiliateImportConfig[:required_headers] })
     @affiliates_processor = ChunkProcessor.new(MerchantFinder.new)
   end
 

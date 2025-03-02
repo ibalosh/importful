@@ -18,7 +18,7 @@ class AffiliateImportService
     # @param records [Array<Hash>] - array of hashes
     def extract_unique_merchants(records)
       records.map { |row| Utils::HashValueFormatter.new.format(
-        row, AffiliateImport.data_formatting_details)[:merchant_slug]
+        row, AffiliateImportConfig.fetch(:data_formatting_details))[:merchant_slug]
       }.uniq
     end
 

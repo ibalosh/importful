@@ -14,7 +14,7 @@ class AffiliateImportService
       merchants_id_slug_map = merchant_finder.find(chunk)
 
       chunk.map do |row|
-        cleaned_up_row = Utils::HashValueFormatter.new.format(row, AffiliateImport.data_formatting_details)
+        cleaned_up_row = Utils::HashValueFormatter.new.format(row, AffiliateImportConfig.fetch(:data_formatting_details))
         switch_merchant_slug_to_id(cleaned_up_row, merchants_id_slug_map)
       end
     end
