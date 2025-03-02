@@ -26,7 +26,8 @@ class CsvDataProcessor
       header_transformations: [ :downcase, :strip ],
       chunk_size: 500,
       remove_unmapped_keys: true,
-      remove_empty_values: true,
+      remove_empty_values: false,
+      remove_empty_hashes: false,
       file_encoding: "bom|utf-8"
     }
   end

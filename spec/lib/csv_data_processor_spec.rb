@@ -87,5 +87,27 @@ describe CsvDataProcessor do
         expect(chunk).to eq(expected_content)
       end
     end
+
+    it "parses the CSV file correctly - empty field" do
+      csv_content = <<~CSV
+        first_name,last_name,email,website_url,address
+        John,Doe,,,address
+      CSV
+      csv_io = StringIO.new(csv_content)
+
+      expected_content = [
+        {
+          first_name: "John",
+          last_name: "Doe",
+          email: "",
+          website_url: "",
+          address: "address"
+        }
+      ]
+
+      described_class.new(csv_io).process do |chunk|
+        expect(chunk).to eq(expected_content)
+      end
+    end
   end
 end
