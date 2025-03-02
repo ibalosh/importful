@@ -7,12 +7,16 @@ class ImportsController < ApplicationController
 
     if import.save
       AffiliatesImportProcessingJob.perform_later(import)
-      redirect_to root_path, notice: "File uploaded successfully. Processing in background."
+      notice =  "File uploaded successfully and is processed in background." \
+                " You can check the status in the imports page."
+
+      redirect_to root_path, notice:
     else
       redirect_to root_path, alert: "Failed to upload file."
     end
   end
 
+  private
   def uploaded_file
     params.require(:file)
   end

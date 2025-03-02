@@ -9,6 +9,7 @@
     <th>Email</th>
     <th>Website</th>
     <th>Commissions Total</th>
+    <th>Created At</th>
   </tr>
   </thead>
   <tbody>
@@ -20,6 +21,7 @@
       <td><%= affiliate.email %></td>
       <td><%= link_to affiliate.website_url, affiliate.website_url, target: "_blank" %></td>
       <td><%= affiliate.commissions_total %></td>
+      <td><%= affiliate.created_at %></td>
     </tr>
   <% end %>
   </tbody>
@@ -28,7 +30,8 @@
 <!-- Pagination -->
 <div class="mt-4 d-flex justify-content-lg-start">
   <%= paginate @affiliates,
-               theme: 'bootstrap-5',
-               pagination_class: "pagination-sm flex-wrap justify-content-center",
-               nav_class: "d-inline-block" %>
+    theme: 'bootstrap-5',
+    pagination_class: "pagination-sm flex-wrap justify-content-center",
+    nav_class: "d-inline-block"
+  %>
 </div>

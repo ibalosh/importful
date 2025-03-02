@@ -1,5 +1,4 @@
 require "rails_helper"
-require "stringio"
 
 describe CsvDataProcessor do
   describe "#process" do

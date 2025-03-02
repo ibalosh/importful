@@ -6,7 +6,6 @@
     <th class="w-10">ID</th>
     <th class="w-40">Merchant Name</th>
     <th class="w-25">Created At</th>
-    <th class="w-25">Updated At</th>
   </tr>
   </thead>
   <tbody>
@@ -15,7 +14,6 @@
       <td><%= merchant.id %></td>
       <td><%= merchant.slug %></td>
       <td><%= merchant.updated_at %></td>
-      <td><%= merchant.created_at %></td>
     </tr>
   <% end %>
   </tbody>
@@ -24,7 +22,8 @@
 <!-- Pagination -->
 <div class="mt-4 d-flex">
   <%= paginate @merchants,
-               theme: 'bootstrap-5',
-               pagination_class: "pagination-sm flex-wrap justify-content-center",
-               nav_class: "d-inline-block" %>
+    theme: 'bootstrap-5',
+    pagination_class: "pagination-sm flex-wrap justify-content-center",
+    nav_class: "d-inline-block"
+  %>
 </div>

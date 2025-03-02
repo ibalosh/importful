@@ -38,4 +38,5 @@
 
 /node_modules
 
+# Ignore RubyMine project files
 .idea

@@ -18,7 +18,7 @@
         <td><%= import.id %></td>
         <td>
           <% if import.filename.nil? %>
-            <span class="text-muted">No file</span>
+            <span class="text-muted">-</span>
           <% else %>
             <%= link_to import.filename.truncate(20), import.file %>
           <% end %>

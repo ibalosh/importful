@@ -7,6 +7,10 @@ feature "CSV Import", type: :feature, async: false do
 
   it "User downloads an imported CSV file" do
     visit new_import_path
+
+    # Note: not ideal, since we are loading a fixure file from the filesystem
+    # and then we assume merchant in the file is the same as one in test.
+    # This can be improved by loading the file content in the test itself.
     attach_file("file", file_path)
     click_button "Upload and Import"
 
