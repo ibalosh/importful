@@ -26,6 +26,10 @@ class AffiliateImportService
     result(total_records:, processed_records:, not_processed_records:, status: :failed, errors: [ e.message ])
   end
 
+  private
+
+  attr_reader :data_processor, :affiliates_processor
+
   # We use insert_all to insert multiple records at once, and make this operation performant
   # We also return number of the inserted records with returning feature supported by SQLite and PostgreSQL
   # https://www.sqlite.org/lang_returning.html
@@ -39,16 +43,12 @@ class AffiliateImportService
     # In case we can't insert for some reason affiliates, we will log an error.
     # If this happens often, we should address the issue.
   rescue ActiveRecord::ActiveRecordError,
-      ArgumentError,
-      ActiveModel::UnknownAttributeError => e
+    ArgumentError,
+    ActiveModel::UnknownAttributeError => e
 
     Rails.logger.error("Failed to insert affiliates: #{e.message}")
     0
   end
-
-  private
-
-  attr_reader :data_processor, :affiliates_processor
 
   def result(total_records:, processed_records:, not_processed_records:, status:, errors: [])
     {
