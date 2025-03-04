@@ -1,16 +1,19 @@
+class DataProcessorError < StandardError; end
+class CsvDataProcessorError < DataProcessorError; end
+
 # Simple wrapper for processing CSV files, with sensible defaults.
 class CsvDataProcessor
-  # @param file [String] path to the CSV file
   # @param options [Hash] options to pass to SmarterCSV, if not set, default options will be used
-  def initialize(file, options: {})
-    @file = file
+  def initialize(options: {})
     @options = options.merge(default_options)
   end
 
-  def process
+  def process(file)
     SmarterCSV.process(file, options) do |chunk|
       yield chunk if block_given?
     end
+  rescue SmarterCSV::Error => e
+    raise CsvDataProcessorError, e.message
   end
 
   private

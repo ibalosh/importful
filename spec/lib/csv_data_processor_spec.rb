@@ -20,7 +20,7 @@ describe CsvDataProcessor do
         }
       ]
 
-      described_class.new(csv_io).process do |chunk|
+      described_class.new.process(csv_io) do |chunk|
         expect(chunk).to eq(expected_content)
       end
     end
@@ -43,7 +43,7 @@ describe CsvDataProcessor do
         }
       ]
 
-      described_class.new(csv_io).process do |chunk|
+      described_class.new.process(csv_io) do |chunk|
         expect(chunk).to eq(expected_content)
       end
     end
@@ -63,7 +63,7 @@ describe CsvDataProcessor do
         }
       ]
 
-      described_class.new(csv_io).process do |chunk|
+      described_class.new.process(csv_io) do |chunk|
         expect(chunk).to eq(expected_content)
       end
     end
@@ -83,7 +83,7 @@ describe CsvDataProcessor do
         }
       ]
 
-      described_class.new(csv_io).process do |chunk|
+      described_class.new.process(csv_io) do |chunk|
         expect(chunk).to eq(expected_content)
       end
     end
@@ -105,9 +105,19 @@ describe CsvDataProcessor do
         }
       ]
 
-      described_class.new(csv_io).process do |chunk|
+      described_class.new.process(csv_io) do |chunk|
         expect(chunk).to eq(expected_content)
       end
+    end
+
+    it "throws an error correctly - duplicate headers" do
+      csv_content = <<~CSV
+        John,Doe,,,address
+      CSV
+      csv_io = StringIO.new(csv_content)
+
+      data_processor = described_class.new(options: { required_keys: AffiliateImportConfig[:required_headers] })
+      expect { data_processor.process(csv_io) }.to raise_error(DataProcessorError)
     end
   end
 end

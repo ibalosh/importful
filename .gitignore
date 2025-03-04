@@ -40,3 +40,4 @@
 
 # Ignore RubyMine project files
 .idea
+.DS_Store

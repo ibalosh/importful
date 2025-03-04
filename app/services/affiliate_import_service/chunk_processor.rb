@@ -2,8 +2,6 @@ class AffiliateImportService
   # We will process chunks of data from the file which contain merchant_slug.
   # Data will preserve it's shape we will only change merchant_slug to merchant_id.
   class ChunkProcessor
-    attr_reader :merchant_finder
-
     # @param merchant_finder [MerchantFinder]
     def initialize(merchant_finder)
       @merchant_finder = merchant_finder
@@ -11,7 +9,7 @@ class AffiliateImportService
 
     # @param chunk [Array<Hash>] chunk of data to process
     def format_chunk(chunk)
-      merchants_id_slug_map = merchant_finder.find(chunk)
+      merchants_id_slug_map = @merchant_finder.find(chunk)
 
       chunk.map do |row|
         cleaned_up_row = Utils::HashValueFormatter.new.format(row, AffiliateImportConfig.fetch(:data_formatting_details))

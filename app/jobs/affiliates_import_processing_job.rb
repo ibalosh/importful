@@ -8,7 +8,9 @@ class AffiliatesImportProcessingJob < ApplicationJob
     begin
       Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{active_storage_file.id}"
       active_storage_file.update!(status: "processing", filename: filename)
-      result = AffiliateImportService.new(file_path).call
+      result = AffiliateImportService.new(
+        CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] })
+      ).call(file_path)
       result_status = result[:status]
 
       # we could have just passed the result_status to the update! method,

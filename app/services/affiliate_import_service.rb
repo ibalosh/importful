@@ -1,16 +1,16 @@
 class AffiliateImportService
-  # @param file [String] path to the file
-  def initialize(file)
-    @data_processor = CsvDataProcessor.new(file, options: { required_keys: AffiliateImportConfig[:required_headers] })
+  def initialize(data_processor)
+    @data_processor = data_processor
     @affiliates_processor = ChunkProcessor.new(MerchantFinder.new)
   end
 
-  def call
+  # @param file [String] path to the file
+  def call(file)
     total_records = 0
     processed_records = 0
     not_processed_records = 0
 
-    data_processor.process do |chunk|
+    data_processor.process(file) do |chunk|
       total_records += chunk.size
       formatted_affiliates = affiliates_processor.format_chunk(chunk)
       inserted_count = insert(formatted_affiliates)
@@ -21,7 +21,7 @@ class AffiliateImportService
 
     result(total_records:, processed_records:, not_processed_records:, status: :finished)
 
-  rescue SmarterCSV::Error => e
+  rescue DataProcessorError => e
     Rails.logger.error("Failed to parse file: #{e.message}")
     result(total_records:, processed_records:, not_processed_records:, status: :failed, errors: [ e.message ])
   end
