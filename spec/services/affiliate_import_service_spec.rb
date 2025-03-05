@@ -2,23 +2,24 @@ require "rails_helper"
 
 describe AffiliateImportService do
   let(:data_processor) { CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] }) }
+  let(:data_formatter) { DataFormatter.new(AffiliateImportConfig.fetch(:data_formatting_details)) }
+  let(:data_transformer) { DataTransformer.new(from_key: :merchant_slug, to_key: :merchant_id) }
+  let(:service) { described_class.new(data_processor, data_formatter, data_transformer) }
 
   describe "#call" do
-    it "raises an error - when missing headers" do
+    it "trims unwanted leading and trailing spaces" do
       csv_content = <<~CSV
-          first_name,last_name,email,website_url,commissions_total
-          John,Doe,user@example.com,example.com,1000
+          merchant_slug,first_name,last_name,email,website_url,commissions_total
+          existing-merchant,  first , last , USER@EXAMPLE.COM , EXAMPLE.COM , 1,234.56
         CSV
 
       csv_io = StringIO.new(csv_content)
-      service = described_class.new(data_processor)
 
       result = service.call(csv_io)
       aggregate_failures "verify errors" do
-        expect(result[:errors].size).to be > 0
-        expect(result[:status][:total_records]).to eq(0)
+        expect(result[:status][:total_records]).to eq(1)
         expect(result[:status][:processed_records]).to eq(0)
-        expect(result[:status][:not_processed_records]).to eq(0)
+        expect(result[:status][:not_processed_records]).to eq(1)
       end
     end
 
@@ -27,11 +28,10 @@ describe AffiliateImportService do
 
       csv_content = <<~CSV
         merchant_slug,first_name,last_name,email,website_url,commissions_total
-        test-merchant, John ,Doe, data_transformed@example.com , example.com , 1234.56
+        test-merchant, jOhn ,doe, data_transformed@EXAMPLE.com , example.com , 1234.56
       CSV
 
       csv_io = StringIO.new(csv_content)
-      service = AffiliateImportService.new(data_processor)
 
       expect { service.call(csv_io) }.to change(Affiliate, :count).by(1)
 
@@ -56,7 +56,7 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { AffiliateImportService.new(data_processor).call(csv_io) }.to change(Affiliate, :count).by(0)
+      expect { service.call(csv_io) }.to change(Affiliate, :count).by(0)
     end
 
     it "does not insert affiliates when there is different amount of data per row" do
@@ -69,7 +69,7 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { AffiliateImportService.new(data_processor).call(csv_io) }.to change(Affiliate, :count).by(0)
+      expect { service.call(csv_io) }.to change(Affiliate, :count).by(0)
     end
 
     it "does not insert affiliates when there is extra amount of data per row" do
@@ -81,7 +81,7 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { AffiliateImportService.new(data_processor).call(csv_io) }.to change(Affiliate, :count).by(0)
+      expect { service.call(csv_io) }.to change(Affiliate, :count).by(0)
     end
 
     it "does not insert affiliates when data missing" do
@@ -94,7 +94,7 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { AffiliateImportService.new(data_processor).call(csv_io) }.to change(Affiliate, :count).by(0)
+      expect { service.call(csv_io) }.to change(Affiliate, :count).by(0)
     end
   end
 end

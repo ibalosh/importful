@@ -1,10 +1,16 @@
-require 'rails_helper'
+require "rails_helper"
 
-describe AffiliateImportService::ChunkProcessor do
-  let(:merchant_finder) { instance_double(AffiliateImportService::MerchantFinder) }
-  let(:chunk_processor) { described_class.new(merchant_finder) }
+describe DataFormatter do
+  let(:data_formatter) { described_class.new(
+    merchant_slug: [ :clean_string ],
+    first_name: [ :clean_string, :capitalize_string ],
+    last_name: [ :clean_string, :capitalize_string ],
+    email: [ :clean_string, :normalize_string ],
+    website_url: [ :clean_string, :normalize_url ],
+    commissions_total: [ :normalize_number ]
+  ) }
 
-  describe "#format_chunk" do
+  describe "#format" do
     it "trims unwanted leading and trailing spaces" do
       chunk = [
         {
@@ -17,11 +23,10 @@ describe AffiliateImportService::ChunkProcessor do
         }
       ]
 
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       aggregate_failures "formatted data check" do
-        expect(record_to_check[:merchant_id]).to eq(1)
+        expect(record_to_check[:merchant_slug]).to eq("slug-name")
         expect(record_to_check[:first_name]).to eq("First")
         expect(record_to_check[:last_name]).to eq("Last")
         expect(record_to_check[:email]).to eq("user@example.com")
@@ -40,11 +45,9 @@ describe AffiliateImportService::ChunkProcessor do
         }
       ]
 
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       aggregate_failures "formatted data check" do
-        expect(record_to_check[:merchant_id]).to eq(1)
         expect(record_to_check[:first_name]).to eq("First")
         expect(record_to_check[:last_name]).to eq("Last")
         expect(record_to_check[:email]).to eq("user@example.com")
@@ -54,54 +57,42 @@ describe AffiliateImportService::ChunkProcessor do
 
     it "converts numbers to the correct decimal format - single comma" do
       chunk = [ { commissions_total: "1,234.56" } ]
-
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       expect(record_to_check[:commissions_total]).to eq(1234.56)
     end
 
     it "converts numbers to the correct decimal format - multiple commas" do
       chunk = [ { commissions_total: "1,234,567.89" } ]
-
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       expect(record_to_check[:commissions_total]).to eq(1234567.89)
     end
 
     it "converts numbers to the correct decimal format - remove whitespace" do
       chunk = [ { commissions_total: "1 234 567.89" } ]
-
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       expect(record_to_check[:commissions_total]).to eq(1234567.89)
     end
 
     it "ensures URLs include http:// or https:// - no protocol" do
       chunk = [ { website_url: " EXAMPLE.COM " } ]
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       expect(record_to_check[:website_url]).to eq("http://example.com")
     end
 
-    it "ensures URL include http:// or https:// - preserves protocol" do
+    it "ensures URLs include http:// or https:// - preserves protocol" do
       chunk = [ { website_url: "HTTP://EXAMPLE.COM " } ]
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       expect(record_to_check[:website_url]).to eq("http://example.com")
     end
 
-    it "ensures URL include http:// or https:// - preserves secure protocol" do
+    it "ensures URLs include http:// or https:// - preserves secure protocol" do
       chunk = [ { website_url: "HTTPs://EXAMPLE.COM " } ]
-      allow(merchant_finder).to receive(:find).and_return({ "slug-name" => 1 })
-
-      record_to_check = chunk_processor.format_chunk(chunk).first
+      record_to_check = data_formatter.format(chunk).first
 
       expect(record_to_check[:website_url]).to eq("https://example.com")
     end

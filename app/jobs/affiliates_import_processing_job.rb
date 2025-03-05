@@ -9,7 +9,9 @@ class AffiliatesImportProcessingJob < ApplicationJob
       Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{active_storage_file.id}"
       active_storage_file.update!(status: "processing", filename: filename)
       result = AffiliateImportService.new(
-        CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] })
+        CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] }),
+        DataFormatter.new(AffiliateImportConfig.fetch(:data_formatting_details)),
+        DataTransformer.new(from_key: :merchant_slug, to_key: :merchant_id)
       ).call(file_path)
       result_status = result[:status]
 
