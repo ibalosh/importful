@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  resources :imports, only: [ :create, :new ]
+  get "affiliates", to: "affiliates#index"
+  get "merchants", to: "merchants#index"
+  resources :imports, only: [ :create, :new, :index ]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -1,0 +1,30 @@
+<h2 class="mb-4">Affiliates</h2>
+
+<table class="table table-striped table-hover table-bordered align-middle">
+  <thead class="table-info">
+  <tr>
+    <th>ID</th>
+    <th>Merchant ID</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Website</th>
+    <th>Commissions Total</th>
+    <th>Created At</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @affiliates.each do |affiliate| %>
+    <tr>
+      <td><%= affiliate.id %></td>
+      <td><%= affiliate.merchant_id %></td>
+      <td><%= affiliate.first_name %> <%= affiliate.last_name %></td>
+      <td><%= affiliate.email %></td>
+      <td><%= link_to affiliate.website_url, affiliate.website_url, target: "_blank" %></td>
+      <td><%= affiliate.commissions_total %></td>
+      <td><%= affiliate.created_at %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= paginate @affiliates, theme: 'bootstrap-5' %>

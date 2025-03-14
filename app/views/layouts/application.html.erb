@@ -23,7 +23,12 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-light p-1">
+    <div class="container w-80">
+      <%= render "shared/navbar" %>
+      <%= render 'layouts/flash' %>
+      <%= yield %>
+      <%= render "shared/footer" %>
+    </div>
   </body>
 </html>

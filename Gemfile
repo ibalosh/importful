@@ -46,6 +46,13 @@ gem "rack-timeout"
 gem "email_validator"
 gem "validate_url"
 
+# Added gems for the assignment
+# for reading csv files more efficiently
+# and for pagination on the views
+gem "smarter_csv"
+gem "kaminari"
+gem "bootstrap5-kaminari-views"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -62,6 +69,10 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "shoulda-matchers", "~> 6.0"
   gem "faker"
+
+  # For feature testing, will use Capybara with Selenium driver
+  gem "capybara", "~> 3.40"
+  gem "selenium-webdriver", "~> 4.29"
 end
 
 group :development do

@@ -1,12 +1,42 @@
-<h1><%= image_tag "logo.svg" %></h1>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-info-subtle text-center">
+          <h4>Upload a CSV File</h4>
+        </div>
 
-<%= form_with(url: imports_path, local: true, method: :post, html: { multipart: true }) do |form| %>
-  <fieldset class="field">
-    <%= form.label :file %>
-    <%= form.file_field :file, accept: '.csv' %>
-  </fieldset>
+        <div class="card-body">
+          <!-- Explanation of Expected CSV Format -->
+          <div class="alert alert-info text-center">
+            <p><strong>Instructions:</strong> Upload a CSV file containing affiliate data.</p>
+            <p>The file must be formatted with the following columns:</p>
+            <ul class="list-unstyled">
+              <li><strong>merchant_slug</strong> - Unique identifier for the merchant</li>
+              <li><strong>first_name</strong> - First name of the affiliate</li>
+              <li><strong>last_name</strong> - Last name of the affiliate</li>
+              <li><strong>email</strong> - Contact email of the affiliate</li>
+              <li><strong>website_url</strong> - Website associated with the affiliate</li>
+              <li><strong>commissions_total</strong> - Total earned commissions (decimal)</li>
+            </ul>
+            <p>The file should be in **CSV format** with a **header row**.</p>
+          </div>
 
-  <div class="actions">
-    <%= form.submit "Upload and Import" %>
+          <%= form_with(url: imports_path, local: true, method: :post, html: { multipart: true }) do |form| %>
+            <div class="mb-3">
+              <%= form.label :file, "Choose CSV File", class: "form-label" %>
+              <%= form.file_field :file, accept: '.csv', class: "form-control", direct_upload: true %>
+            </div>
+
+            <div class="text-center">
+              <%= form.submit "Upload and Import", class: "btn btn-primary px-4" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
-<% end %>
+</div>
+
+
+

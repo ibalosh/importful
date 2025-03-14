@@ -37,3 +37,7 @@
 !/app/assets/builds/.keep
 
 /node_modules
+
+# Ignore RubyMine project files
+.idea
+.DS_Store
