@@ -1,18 +1,22 @@
 # Process a file in background and update the status during the process
 class AffiliatesImportProcessingJob < ApplicationJob
   queue_as :default
-  def perform(active_storage_file)
+  def perform(active_storage_file, merchant_id)
     filename = active_storage_file.file.filename.to_s
     file_path = ActiveStorage::Blob.service.path_for(active_storage_file.file.key)
 
     begin
       Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{active_storage_file.id}"
       active_storage_file.update!(status: "processing", filename: filename)
+
+      merchant_mapping = Merchant.where(id: merchant_id).pluck(:slug, :id).to_h
+
       result = AffiliateImportService.new(
         CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] }),
         DataFormatter.new(AffiliateImportConfig.fetch(:data_formatting_details)),
         DataTransformer.new(from_key: :merchant_slug, to_key: :merchant_id)
-      ).call(file_path)
+      ).call(file_path, merchant_mapping)
+
       result_status = result[:status]
 
       # we could have just passed the result_status to the update! method,
