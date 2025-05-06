@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  get "sign_ups/new"
+  get "sign_ups/create"
+  get "sessions/new"
+  get "sessions/create"
+  get "sessions/destroy"
   get "affiliates", to: "affiliates#index"
   get "merchants", to: "merchants#index"
   resources :imports, only: [ :create, :new, :index ]
@@ -13,5 +18,13 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "imports#new"
+  # root "imports#new"
+  get "/sign_up", to: "sign_ups#new"
+  post "/sign_up", to: "sign_ups#create"
+
+  get "/sign_in", to: "sessions#new"
+  post "/sign_in", to: "sessions#create"
+  get "/logout", to: "sessions#destroy"
+
+  root "sessions#new"
 end
