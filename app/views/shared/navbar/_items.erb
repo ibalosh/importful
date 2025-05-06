@@ -1,0 +1,23 @@
+<ul class="navbar-nav ms-auto"> <!-- Align menu items to the right -->
+  <% if logged_in? %>
+    <li class="nav-item">
+      <%= link_to "Upload New Import", new_import_path, class: "nav-link fw-bold custom-hover #{active_nav_link(new_import_path)}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Imports", imports_path, class: "nav-link fw-bold custom-hover #{active_nav_link(imports_path)}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Affiliates", affiliates_path, class: "nav-link fw-bold custom-hover #{active_nav_link(affiliates_path)}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Logout", logout_path, class: "nav-link fw-bold custom-hover #{active_nav_link(logout_path)}" %>
+    </li>
+  <% else %>
+    <li class="nav-item">
+      <%= link_to "Sign up", sign_up_path, class: "nav-link fw-bold custom-hover #{active_nav_link(sign_up_path)}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Sign in", sign_in_path, class: "nav-link fw-bold custom-hover #{active_nav_link(sign_in_path)}" %>
+    </li>
+  <% end %>
+</ul>
