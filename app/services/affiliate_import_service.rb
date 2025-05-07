@@ -5,7 +5,7 @@ class AffiliateImportService
     @data_transformer = data_transformer
   end
 
-  # @param file [String] path to the file
+  # @param file [String, StringIO] path to the file
   def call(file, merchant_mapping)
     total_records = 0
     processed_records = 0
