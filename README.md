@@ -2,8 +2,6 @@
 
 [![GitHub Actions](https://github.com/ibalosh/importful/actions/workflows/ci.yml/badge.svg)](https://github.com/ibalosh/importful/actions)
 
-## Overview
-
 This is a small Ruby on Rails application designed to manage affiliate data for merchants. The app allows merchants to:
 
 - **Sign Up** and **Sign In** to their accounts.
