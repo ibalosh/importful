@@ -1,28 +1,32 @@
 require "rails_helper"
 
 feature "CSV Import", type: :feature, async: false do
-  let!(:merchant) { create(:merchant, slug: "merchant-a") }
-  let(:file_path) { Rails.root.join("spec/fixtures/files/sample.csv") }
-  let(:filename) { "sample.csv" }
+  let(:merchant) { create(:merchant) }
+
+  before(:each) do
+    visit sessions_new_path
+    fill_in "Slug", with: merchant.slug
+    fill_in "Password", with: merchant.password
+    click_button "Sign In"
+  end
 
   it "User downloads an imported CSV file" do
+    content = <<~CSV
+      merchant_slug,first_name,last_name,email,website_url,commissions_total
+      merchant-a,John,Doe,john@example.com,https://example.com,100.50
+      merchant-a,Jane,Smith,jane@example.com,https://janesblog.com,200.75
+    CSV
+    filename = "test.csv"
+    csv_file = create_temp_file(filename:, content:)
+
     visit new_import_path
-
-    # Note: not ideal, since we are loading a fixure file from the filesystem
-    # and then we assume merchant in the file is the same as one in test.
-    # This can be improved by loading the file content in the test itself.
-    attach_file("file", file_path)
+    attach_file("file", csv_file.path)
     click_button "Upload and Import"
-
     visit imports_path
-    expect(page).to have_content(filename, wait: 5)
 
-    download_link = find("a", text: "sample.csv")[:href]
+    download_link = find("a", text: filename)[:href]
     visit download_link
 
-    file_content = page.body.strip
-    expected_content = File.read(file_path).strip
-
-    expect(file_content).to eq(expected_content)
+    expect(page.body.strip).to eq(content.strip)
   end
 end

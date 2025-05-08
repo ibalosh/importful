@@ -124,4 +124,8 @@ DEMO_MERCHANT_NAMES = [
   "Halcyon Ventures"
 ].freeze
 
-Merchant.insert_all!(DEMO_MERCHANT_NAMES.map { |e| { slug: e.parameterize } })
+password_digest = BCrypt::Password.create("test")
+
+Merchant.create!(
+  DEMO_MERCHANT_NAMES.map { |e| { slug: e.parameterize, password_digest: } }
+)

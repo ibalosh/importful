@@ -1,0 +1,19 @@
+<div class="container mt-5" style="max-width: 400px;">
+  <h2 class="mb-4 text-center">Sign In</h2>
+
+  <%= form_with url: sign_in_path, method: :post, local: true do |form| %>
+    <div class="mb-3">
+      <%= form.label :slug, class: "form-label" %>
+      <%= form.text_field :slug, class: "form-control", autofocus: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :password, class: "form-label" %>
+      <%= form.password_field :password, class: "form-control" %>
+    </div>
+
+    <div class="d-grid">
+      <%= form.submit "Sign In", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

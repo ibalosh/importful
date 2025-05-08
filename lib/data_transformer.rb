@@ -9,10 +9,11 @@ class DataTransformer
   end
 
   def transform(data, from_to_key_map)
+    # deep copy of the data to avoid modifying the original data
     data.map do |row|
-      row[@to_key] = from_to_key_map[row[@from_key]] || -1
-      row.delete(@from_key)
-      row
+      {
+        @to_key => from_to_key_map[row[@from_key]] || -1
+      }.merge(row.reject { |key, _| key == @from_key })
     end
   end
 end

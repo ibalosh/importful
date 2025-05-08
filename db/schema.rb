@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_01_172649) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_06_132830) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -60,16 +60,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_172649) do
     t.integer "not_processed_records", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "merchant_id", null: false
+    t.index ["merchant_id"], name: "index_imports_on_merchant_id"
   end
 
   create_table "merchants", force: :cascade do |t|
     t.string "slug", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password_digest"
     t.index ["slug"], name: "index_merchants_on_slug", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "affiliates", "merchants"
+  add_foreign_key "imports", "merchants"
 end

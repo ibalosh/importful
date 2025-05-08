@@ -5,8 +5,8 @@ class AffiliateImportService
     @data_transformer = data_transformer
   end
 
-  # @param file [String] path to the file
-  def call(file)
+  # @param file [String, StringIO] path to the file
+  def call(file, merchant_mapping)
     total_records = 0
     processed_records = 0
     not_processed_records = 0
@@ -15,9 +15,9 @@ class AffiliateImportService
       total_records += chunk.size
 
       formatted_chunk = data_formatter.format(chunk)
-      merchant_mapping = fetch_merchant_mapping(formatted_chunk)
 
       affiliates = data_transformer.transform(formatted_chunk, merchant_mapping)
+      affiliates = affiliates.select { |af| af[:merchant_id] != -1 }
       inserted_count = bulk_insert(affiliates)
 
       processed_records += inserted_count
@@ -34,11 +34,6 @@ class AffiliateImportService
   private
 
   attr_reader :data_processor, :data_formatter, :data_transformer
-
-  def fetch_merchant_mapping(chunk)
-    slugs = chunk.map { |entry| entry[:merchant_slug] }.uniq
-    Merchant.where(slug: slugs).pluck(:slug, :id).to_h
-  end
 
   # We use insert_all to insert multiple records at once, and make this operation performant
   # We also return number of the inserted records with returning feature supported by SQLite and PostgreSQL

@@ -1,0 +1,24 @@
+<div class="container mt-5" style="max-width: 400px;">
+  <h2 class="mb-4 text-center">Sign Up</h2>
+
+  <%= form_with model: @merchant, url: sign_up_path, local: true do |form| %>
+    <div class="mb-3">
+      <%= form.label :slug, class: "form-label" %>
+      <%= form.text_field :slug, class: "form-control", autofocus: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :password, class: "form-label" %>
+      <%= form.password_field :password, class: "form-control", required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :password_confirmation, class: "form-label" %>
+      <%= form.password_field :password_confirmation, class: "form-control" %>
+    </div>
+
+    <div class="d-grid gap-2">
+      <%= form.submit "Sign Up", class: "btn btn-success" %>
+    </div>
+  <% end %>
+</div>

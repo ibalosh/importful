@@ -1,5 +1,8 @@
 class Merchant < ApplicationRecord
   has_many :affiliates
+  has_many :imports
+
+  has_secure_password
 
   validates :slug,
     presence: true,
