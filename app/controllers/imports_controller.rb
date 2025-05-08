@@ -10,7 +10,7 @@ class ImportsController < ApplicationController
       notice =  "File uploaded successfully and is processed in background." \
                 " You can check the status in the imports page."
 
-      redirect_to root_path, notice:
+      redirect_to new_import_path, notice:
     else
       redirect_to root_path, alert: "Failed to upload file."
     end

@@ -5,4 +5,7 @@
 import { application } from "./application"
 
 import HelloController from "./hello_controller"
-application.register("hello", HelloController)
+import UploadController from "./upload_controller";
+
+application.register("hello", HelloController);
+application.register("upload", UploadController);

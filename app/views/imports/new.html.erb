@@ -22,16 +22,27 @@
             <p>The file should be in **CSV format** with a **header row**.</p>
           </div>
 
-          <%= form_with(url: imports_path, local: true, method: :post, html: { multipart: true }) do |form| %>
-            <div class="mb-3">
-              <%= form.label :file, "Choose CSV File", class: "form-label" %>
-              <%= form.file_field :file, accept: '.csv', class: "form-control", direct_upload: true %>
+          <div data-controller="upload">
+            <div class="mb-3" data-upload-target="form">
+              <%= form_with(url: imports_path, local: true, method: :post, html: { multipart: true }) do |form| %>
+                <div class="mb-3">
+                  <%= form.label :file, "Choose CSV File", class: "form-label" %>
+                  <%= form.file_field :file, accept: '.csv', class: "form-control", direct_upload: true %>
+                </div>
+
+                <div class="text-center">
+                  <%= form.submit "Upload and Import", class: "btn btn-primary px-4" %>
+                </div>
+              <% end %>
             </div>
 
-            <div class="text-center">
-              <%= form.submit "Upload and Import", class: "btn btn-primary px-4" %>
+            <div data-upload-target="progressBar" hidden>
+              <%= label("upload-progress", "Upload is in progress...", class: "form-label") %>
+              <div class="progress mb-3" style="height: 2rem;">
+                <div class="progress-bar" role="progressbar" data-upload-target="progressBarValue" id="upload-progress"></div>
+              </div>
             </div>
-          <% end %>
+          </div>
         </div>
       </div>
     </div>
