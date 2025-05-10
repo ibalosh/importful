@@ -27,7 +27,6 @@ class AffiliatesImportProcessingJob < ApplicationJob
       )
       Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{import.id}"
 
-    # Make sure to log the errors
     rescue StandardError => e
       import.update(status: "failed")
       Rails.logger.error "CSV processing started for Affiliate Active Storage file with ID: #{import.id} - #{e.message}"

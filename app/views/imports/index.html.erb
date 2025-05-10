@@ -35,7 +35,7 @@
         <td><%= number_or_dash(import.processed_records, import.finished?) %></td>
         <td><%= number_or_dash(import.not_processed_records, import.finished?) %></td>
         <td class="text-center">
-          <%= import.status %>
+          <%= import_status_badge(import.status) %>
         </td>
         <td><%= import.created_at.strftime("%Y-%m-%d %H:%M") %></td>
       </tr>

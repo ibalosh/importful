@@ -1,2 +1,12 @@
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons';
+
+@keyframes pulse-bg {
+  0%   { background-color: #fbc640; }   // Bootstrap warning bg
+  50%  { background-color: #f8efd0; }   // slightly lighter yellow
+  100% { background-color: #fbc640; }
+}
+
+.pulse {
+  animation: pulse-bg 1.5s ease-in-out infinite;
+}
