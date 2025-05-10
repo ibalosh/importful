@@ -36,19 +36,23 @@ class AffiliateImportService
 
   # @param affiliates [Array<Hash>]
   def bulk_insert(affiliates, import_id, chunk)
-    affiliates.each_with_index do |affiliate, index|
-      errors = insert_affiliate(affiliate)
-      update_records(processed: errors.empty?)
+    batch_size = 10
+    affiliates.each_slice(batch_size).with_index do |batch, batch_index|
+      ActiveRecord::Base.transaction do
+        batch.each_with_index do |affiliate, index|
+          errors = insert_affiliate(affiliate)
+          update_records(processed: errors.empty?)
 
-      if errors.present?
-        ImportDetail.create!(
-          import_id:,
-          row_number: result.fetch(:records).fetch(:total),
-          error_messages: errors.as_json,
-          payload: chunk[index]
-        )
+          if errors.present?
+            ImportDetail.create!(
+              import_id: import_id,
+              row_number: result[:records][:total],
+              error_messages: errors.as_json,
+              payload: chunk[batch_index * 10 + index]
+            )
+          end
+        end
       end
-      sleep 1
     end
   end
 

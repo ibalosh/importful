@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_153931) do
     t.integer "import_id", null: false
     t.integer "row_number", null: false
     t.json "error_messages", default: [], null: false
-    t.text "payload", default: "", null: false
+    t.json "payload", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["import_id"], name: "index_import_details_on_import_id"

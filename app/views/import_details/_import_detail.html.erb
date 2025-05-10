@@ -2,8 +2,8 @@
   <td><%= import_detail.row_number %></td>
   <td><%= import_detail.error_messages.join(",") %></td>
   <td>
-    <div class="text-truncate" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-      <%= import_detail.payload.is_a?(String) ? import_detail.payload : import_detail.payload.to_json %>
+    <div class="bg-light rounded p-2">
+      <%= import_detail.payload.values.map { |v| content_tag(:code, v) }.join(', ').html_safe %>
     </div>
   </td>
 </tr>
