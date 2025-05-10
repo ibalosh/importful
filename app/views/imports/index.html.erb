@@ -5,6 +5,7 @@
   <tr>
     <th>ID</th>
     <th>File</th>
+    <th>Details</th>
     <th>Total Records</th>
     <th>Processed Records</th>
     <th>Not Processed Records</th>
@@ -23,9 +24,16 @@
             <%= link_to import.filename.truncate(20), import.file %>
           <% end %>
         </td>
-        <td><%= import.total_records %></td>
-        <td><%= import.processed_records %></td>
-        <td><%= import.not_processed_records %></td>
+        <td>
+          <% if import.import_details.present? %>
+            <%= link_to "error details", import_import_details_path(import) %>
+          <% else %>
+            <span class="text-muted">-</span>
+          <% end %>
+        </td>
+        <td><%= number_or_dash(import.total_records, import.finished?) %></td>
+        <td><%= number_or_dash(import.processed_records, import.finished?) %></td>
+        <td><%= number_or_dash(import.not_processed_records, import.finished?) %></td>
         <td class="text-center">
           <%= import.status %>
         </td>

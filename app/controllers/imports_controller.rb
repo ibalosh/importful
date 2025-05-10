@@ -7,10 +7,8 @@ class ImportsController < ApplicationController
 
     if import.save
       AffiliatesImportProcessingJob.perform_later(import, current_user.id)
-      notice =  "File uploaded successfully and is processed in background." \
-                " You can check the status in the imports page."
-
-      redirect_to new_import_path, notice:
+      notice =  "File is processed in the background. You can check the status in the imports page."
+      redirect_to import_details_index_path(import), notice:
     else
       redirect_to root_path, alert: "Failed to upload file."
     end

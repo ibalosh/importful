@@ -1,69 +1,85 @@
 class AffiliateImportService
+  # @param data_processor [CsvDataProcessor] the data processor object
+  # @param data_formatter [DataFormatter] the data formatter object
+  # @param data_transformer [DataTransformer] the data transformer object
+  # @return [Hash] - import statistics
   def initialize(data_processor, data_formatter, data_transformer)
     @data_processor = data_processor
     @data_formatter = data_formatter
     @data_transformer = data_transformer
+
+    reset_result
   end
 
-  # @param file [String, StringIO] path to the file
-  def call(file, merchant_mapping)
-    total_records = 0
-    processed_records = 0
-    not_processed_records = 0
-
-    data_processor.process(file) do |chunk|
-      total_records += chunk.size
-
+  # @param import_file [String, StringIO] path to the file
+  # @param import_id [Integer] the import id
+  # @param merchant_mapping [Hash] the mapping of merchant slug to id
+  def call(import_file, import_id, merchant_mapping)
+    reset_result
+    data_processor.process(import_file) do |chunk|
       formatted_chunk = data_formatter.format(chunk)
-
       affiliates = data_transformer.transform(formatted_chunk, merchant_mapping)
-      affiliates = affiliates.select { |af| af[:merchant_id] != -1 }
-      inserted_count = bulk_insert(affiliates)
-
-      processed_records += inserted_count
-      not_processed_records += (chunk.size - inserted_count)
+      bulk_insert(affiliates, import_id, chunk)
     end
 
-    result(total_records:, processed_records:, not_processed_records:, status: :finished)
-
+    result[:status] = :finished
+    result
   rescue DataProcessorError => e
     Rails.logger.error("Failed to parse file: #{e.message}")
-    result(total_records:, processed_records:, not_processed_records:, status: :failed, errors: [ e.message ])
+    result[:status] = :failed
+    result
   end
 
   private
 
   attr_reader :data_processor, :data_formatter, :data_transformer
 
-  # We use insert_all to insert multiple records at once, and make this operation performant
-  # We also return number of the inserted records with returning feature supported by SQLite and PostgreSQL
-  # https://www.sqlite.org/lang_returning.html
-  #
-  # Downside of this approach to inserting is that validations and callbacks on records are not called.
-  # This can be problematic for error handling for data.
   # @param affiliates [Array<Hash>]
-  def bulk_insert(affiliates)
-    Affiliate.insert_all(affiliates, returning: %w[merchant_id]).count
+  def bulk_insert(affiliates, import_id, chunk)
+    affiliates.each_with_index do |affiliate, index|
+      errors = insert_affiliate(affiliate)
+      update_records(processed: errors.empty?)
 
-    # In case we can't insert for some reason affiliates, we will log an error.
-    # If this happens often, we should address the issue.
+      if errors.present?
+        ImportDetail.create!(
+          import_id:,
+          row_number: result.fetch(:records).fetch(:total),
+          error_messages: errors.as_json,
+          payload: chunk[index]
+        )
+      end
+      sleep 1
+    end
+  end
+
+  def insert_affiliate(affiliate)
+    record = Affiliate.new(affiliate)
+    record.save
+    record.errors.full_messages
   rescue ActiveRecord::ActiveRecordError,
     ArgumentError,
     ActiveModel::UnknownAttributeError => e
 
     Rails.logger.error("Failed to insert affiliates: #{e.message}")
-    0
+    [ e.message ]
   end
 
-  def result(total_records:, processed_records:, not_processed_records:, status:, errors: [])
-    {
-      status: {
-        total_records:,
-        processed_records:,
-        not_processed_records:,
-        status:
+  def update_records(processed: true)
+    result[:records][:total] += 1
+    result[:records][:processed] += 1 if processed
+    result[:records][:not_processed] += 1 unless processed
+  end
+
+  def reset_result
+    @result ={
+      records: {
+        total: 0,
+        processed: 0,
+        not_processed: 0
       },
-      errors:
+      status: :none
     }
   end
+
+  attr_accessor :result
 end
