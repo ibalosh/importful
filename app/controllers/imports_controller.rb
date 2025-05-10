@@ -3,6 +3,12 @@ class ImportsController < ApplicationController
     @imports = Import.where(merchant_id: current_user.id).order(created_at: :desc).page(params[:page]).per(10)
   end
   def create
+    file = ActiveStorage::Blob.find_signed(uploaded_file)
+    if file.byte_size > 10.megabytes
+      redirect_to new_import_path, alert: "File is too large. Please upload a file smaller than 10MB."
+      return
+    end
+
     import = Import.new(merchant_id: current_user.id).tap { |import| import.file.attach(uploaded_file) }
 
     if import.save

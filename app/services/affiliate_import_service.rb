@@ -51,8 +51,6 @@ class AffiliateImportService
               payload: chunk[batch_index * 10 + index]
             )
           end
-
-          sleep 1
         end
       end
     end
