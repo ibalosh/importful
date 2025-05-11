@@ -3,10 +3,9 @@ class ImportsController < ApplicationController
     @imports = Import.where(merchant_id: current_user.id).order(created_at: :desc).page(params[:page]).per(10)
   end
   def create
-    blob = find_uploaded_file_blob
-    return if blob.nil? || reject_if_file_too_large(blob)
+    return unless uploaded_file_is_valid
 
-    import = build_import(blob)
+    import = Import.new(merchant_id: current_user.id).tap { |import| import.file.attach(uploaded_file) }
 
     if import.save
       AffiliatesImportProcessingJob.perform_later(import, current_user.id)
@@ -22,10 +21,9 @@ class ImportsController < ApplicationController
   UPLOADED_FILE_SIZE_LIMIT = 10.megabytes
   UPLOADED_FILE_SIZE_LIMIT_IN_WORDS = ActiveSupport::NumberHelper.number_to_human_size(UPLOADED_FILE_SIZE_LIMIT)
 
-  def build_import(blob)
-    Import.new(merchant_id: current_user.id).tap do |import|
-      import.file.attach(blob)
-    end
+  def uploaded_file_is_valid
+    blob = find_uploaded_file_blob
+    !(blob.nil? || reject_if_file_too_large(blob))
   end
 
   def find_uploaded_file_blob
