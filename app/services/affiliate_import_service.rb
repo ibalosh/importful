@@ -32,31 +32,30 @@ class AffiliateImportService
 
   private
 
-  attr_reader :data_processor, :data_formatter, :data_transformer
+  attr_reader :data_processor, :data_formatter, :data_transformer, :result
 
   # @param affiliates [Array<Hash>]
-  def bulk_insert(affiliates, import_id, chunk)
-    batch_size = 10
+  # @param import_id [Integer] the import id
+  # @param raw_data [Array<Hash>] the raw data from the CSV file before transformation and formatting
+  # @param batch_size [Integer] the size of each batch to insert
+  def bulk_insert(affiliates, import_id, raw_data, batch_size: 30)
     affiliates.each_slice(batch_size).with_index do |batch, batch_index|
       ActiveRecord::Base.transaction do
         batch.each_with_index do |affiliate, index|
-          errors = insert_affiliate(affiliate)
-          update_records(processed: errors.empty?)
+          errors = insert_affiliate_record(affiliate)
+          update_result(processed: errors.empty?)
 
           if errors.present?
-            ImportDetail.create!(
-              import_id: import_id,
-              row_number: result[:records][:total],
-              error_messages: errors.as_json,
-              payload: chunk[batch_index * 10 + index]
-            )
+            payload = raw_data[batch_index * batch_size + index]
+            row_number = result[:records][:total]
+            insert_import_details_record(import_id:, row_number:, errors:, payload:)
           end
         end
       end
     end
   end
 
-  def insert_affiliate(affiliate)
+  def insert_affiliate_record(affiliate)
     record = Affiliate.new(affiliate)
     record.save
     record.errors.full_messages
@@ -68,7 +67,13 @@ class AffiliateImportService
     [ e.message ]
   end
 
-  def update_records(processed: true)
+  def insert_import_details_record(import_id:, row_number:, errors:, payload:)
+    ImportDetail.create!(import_id: import_id, row_number:, error_messages: errors.as_json, payload:)
+  rescue ActiveRecord::ActiveRecordError => e
+    Rails.logger.error("Failed to insert affiliates: #{e.message}")
+  end
+
+  def update_result(processed: true)
     result[:records][:total] += 1
     result[:records][:processed] += 1 if processed
     result[:records][:not_processed] += 1 unless processed
@@ -84,6 +89,4 @@ class AffiliateImportService
       status: :none
     }
   end
-
-  attr_accessor :result
 end

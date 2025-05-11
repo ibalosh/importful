@@ -1,3 +1,5 @@
 merchant_slug,first_name,last_name,email,website_url,commissions_total
 nexgen,Catherine,Bowen,ritterwendy1@gmail.com,www.catherinebowen.com,1036.41
+nexgen,,,,www.sandrataylor.com,3388.87
 nexgen,Sandra,Taylor,ritterwendy3@gmail.com,www.sandrataylor.com,3388.87
+notexisting,Sandra,Taylor,ritterwendy3@gmail.com,www.sandrataylor.com,3388.87
