@@ -1,6 +1,8 @@
 <tr id="<%= dom_id(import_detail) %>">
   <td><%= import_detail.row_number %></td>
-  <td><%= import_detail.error_messages.join(",") %></td>
+  <td>
+    <%= import_detail.error_messages.join(", ") %>
+  </td>
   <td>
     <div class="bg-light rounded p-2">
       <%= import_detail.payload.values.map { |v| content_tag(:code, v) }.join(', ').html_safe %>
