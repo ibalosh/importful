@@ -5,7 +5,7 @@
   <tr>
     <th>ID</th>
     <th>File</th>
-    <th>Details</th>
+    <th>Upload Errors</th>
     <th>Total Records</th>
     <th>Processed Records</th>
     <th>Not Processed Records</th>
@@ -26,7 +26,7 @@
         </td>
         <td>
           <% if import.import_details.present? %>
-            <%= link_to "error details", import_import_details_path(import) %>
+            <%= link_to "check error details", import_import_details_path(import) %>
           <% else %>
             <span class="text-muted">-</span>
           <% end %>
