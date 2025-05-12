@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   get "sessions/create"
   get "sessions/destroy"
   get "affiliates", to: "affiliates#index"
-  get "merchants", to: "merchants#index"
+  resources :merchants, only: [ :edit, :update, :index ]
+
   resources :imports, only: [ :create, :new, :index ] do
     get "details", to: "import_details#index", as: :import_details
   end

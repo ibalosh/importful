@@ -1,0 +1,10 @@
+<h1>Editing merchant</h1>
+
+<%= turbo_frame_tag "merchant" do %>
+  <%= form_with(model: @merchant, data: { turbo_frame: "_top" }) do |form| %>
+    <%= form.text_field :slug, autofocus: true, minlength: 1 %>
+
+    <%= form.submit "Save", class: "btn btn-primary" %>
+  <% end %>
+<% end %>
+
