@@ -21,7 +21,7 @@ To play with this task, active storage, hotwire (stimulus, turbo frame/stream) w
 
 The initial task for this app can be found [here](TASK.md).
 
-![img.jpg](img.jpg)
+![Readme image](public/readme/main.jpg)
 
 ### Example CSV File
 
