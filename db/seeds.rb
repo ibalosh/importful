@@ -130,3 +130,5 @@ password_digest = BCrypt::Password.create("test")
 Merchant.create!(
   DEMO_MERCHANT_NAMES.map { |e| { slug: e.parameterize, password_digest: } }
 )
+
+Merchant.create!(slug: "admin", password_digest: password_digest, role: "admin")
