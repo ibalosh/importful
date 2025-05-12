@@ -21,11 +21,15 @@ To play with this task, active storage, hotwire (stimulus, turbo frame/stream) w
 
 The initial task for this app can be found [here](TASK.md).
 
-<div style="text-align: center;">
+<p align="center">
     <img src="public/readme/main.jpg" alt="Readme image">
+</p>
+<p align="center">
     <img src="public/readme/imports.jpg" alt="Readme image" width="600">
+</p>
+<p align="center">
     <img src="public/readme/import-details.jpg" alt="Readme image" width="600">
-</div>
+</p>
 
 ### Example CSV File
 
