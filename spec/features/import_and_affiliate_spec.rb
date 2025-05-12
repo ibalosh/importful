@@ -3,6 +3,10 @@ require "rails_helper"
 feature "CSV Import and Affiliate Verification", type: :feature, async: false do
   let(:merchant) { create(:merchant, slug: "merchant-a") }
 
+  before do
+    allow_any_instance_of(ImportsController).to receive(:uploaded_file_is_valid).and_return(true)
+  end
+
   before(:each) do
     visit sessions_new_path
     fill_in "Slug", with: merchant.slug

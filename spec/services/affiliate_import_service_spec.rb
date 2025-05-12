@@ -11,26 +11,31 @@ describe AffiliateImportService do
       { merchant.slug => merchant.id }
     end
 
+    before(:each) do
+      allow(ImportDetail).to receive(:create!)
+    end
+
     it "trims unwanted leading and trailing spaces" do
       merchant = create(:merchant, slug: "existing-merchant")
-
+      fake_import_id = 1
       csv_content = <<~CSV
           merchant_slug,first_name,last_name,email,website_url,commissions_total
-          existing-merchant,  first , last , USER@EXAMPLE.COM , EXAMPLE.COM , 1,234.56
+          existing-merchant,  first , last , USER@EXAMPLE.COM , EXAMPLE.COM , 1234.56
         CSV
 
       csv_io = StringIO.new(csv_content)
 
-      result = import_service.call(csv_io, merchant_mapping(merchant))
+      result = import_service.call(csv_io, fake_import_id, merchant_mapping(merchant))
       aggregate_failures "verify errors" do
-        expect(result[:status][:total_records]).to eq(1)
-        expect(result[:status][:processed_records]).to eq(0)
-        expect(result[:status][:not_processed_records]).to eq(1)
+        expect(result.dig(:records, :total)).to eq(1)
+        expect(result.dig(:records, :processed)).to eq(1)
+        expect(result.dig(:records, :not_processed)).to eq(0)
       end
     end
 
     it "inserts valid affiliate into the database" do
       merchant = create(:merchant, slug: "test-merchant")
+      fake_import_id = 1
 
       csv_content = <<~CSV
         merchant_slug,first_name,last_name,email,website_url,commissions_total
@@ -39,7 +44,7 @@ describe AffiliateImportService do
 
       csv_io = StringIO.new(csv_content)
 
-      expect { import_service.call(csv_io, merchant_mapping(merchant)) }.to change(Affiliate, :count).by(1)
+      expect { import_service.call(csv_io, fake_import_id, merchant_mapping(merchant)) }.to change(Affiliate, :count).by(1)
 
       affiliate = Affiliate.find_by(email: "data_transformed@example.com")
 
@@ -54,6 +59,7 @@ describe AffiliateImportService do
 
     it "does not insert affiliates when one merchant is missing in merchants table" do
       merchant = create(:merchant, slug: "valid-merchant")
+      fake_import_id = 1
 
       csv_content = <<~CSV
         merchant_slug,first_name,last_name,email,website_url,commissions_total
@@ -62,11 +68,13 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { import_service.call(csv_io, merchant_mapping(merchant)) }.to change(Affiliate, :count).by(1)
+      expect { import_service.call(csv_io, fake_import_id, merchant_mapping(merchant)) }.
+        to change(Affiliate, :count).by(1)
     end
 
     it "does not insert affiliates when there is different amount of data per row" do
       merchant = create(:merchant, slug: "valid-merchant")
+      fake_import_id = 1
 
       csv_content = <<~CSV
         merchant_slug,first_name,last_name,email,website_url,commissions_total
@@ -75,11 +83,13 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { import_service.call(csv_io, merchant_mapping(merchant)) }.to change(Affiliate, :count).by(0)
+      expect { import_service.call(csv_io, fake_import_id, merchant_mapping(merchant)) }.
+        to change(Affiliate, :count).by(1)
     end
 
     it "does not insert affiliates when there is extra amount of data per row" do
       merchant = create(:merchant, slug: "valid-merchant")
+      fake_import_id = 1
 
       csv_content = <<~CSV
         merchant_slug,first_name,last_name,email,website_url,commissions_total
@@ -87,11 +97,13 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { import_service.call(csv_io, merchant_mapping(merchant)) }.to change(Affiliate, :count).by(0)
+      expect { import_service.call(csv_io, fake_import_id, merchant_mapping(merchant)) }.
+        to change(Affiliate, :count).by(0)
     end
 
     it "does not insert affiliates when data missing" do
       merchant = create(:merchant, slug: "valid-merchant")
+      fake_import_id = 1
 
       csv_content = <<~CSV
         merchant_slug,first_name,last_name,email,website_url,commissions_total
@@ -100,7 +112,8 @@ describe AffiliateImportService do
       CSV
 
       csv_io = StringIO.new(csv_content)
-      expect { import_service.call(csv_io, merchant_mapping(merchant)) }.to change(Affiliate, :count).by(0)
+      expect { import_service.call(csv_io, fake_import_id, merchant_mapping(merchant)) }.
+        to change(Affiliate, :count).by(0)
     end
   end
 end

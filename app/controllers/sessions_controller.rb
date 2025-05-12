@@ -1,14 +1,13 @@
 class SessionsController < ApplicationController
   skip_before_action :require_logged_in_user
   before_action :require_not_logged_in_user, except: :destroy
-  def new
-  end
+  def new ; end
 
   def create
     @merchant = Merchant.find_by(slug: merchant_params[:slug])
 
     if @merchant&.authenticate(merchant_params[:password])
-      session[:user_id] = @merchant&.id
+      set_user_session(@merchant&.id)
       redirect_to imports_path, notice: "Signed in successfully"
     else
       flash.now[:alert] = "Invalid email or password"
@@ -17,7 +16,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:user_id] = nil
+    clear_user_session
     redirect_to sign_in_path, notice: "Signed out"
   end
 
@@ -25,5 +24,13 @@ class SessionsController < ApplicationController
 
   def merchant_params
     params.permit(:slug, :password)
+  end
+
+  def set_user_session(id)
+    session[:user_id] = id
+  end
+
+  def clear_user_session
+    session[:user_id] = nil
   end
 end

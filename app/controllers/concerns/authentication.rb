@@ -8,7 +8,7 @@ module Authentication
   end
 
   def current_user
-    @current_user ||= Merchant.find_by(id: session[:user_id]) if session[:user_id]
+    @current_user ||= Merchant.find_by(id: user_session) if user_session
   end
 
   def logged_in?
@@ -21,5 +21,11 @@ module Authentication
 
   def require_logged_in_user
     redirect_to sign_in_path, alert: "Please sign in to continue" unless logged_in?
+  end
+
+  private
+
+  def user_session
+    session[:user_id]
   end
 end

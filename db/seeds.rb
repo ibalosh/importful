@@ -9,6 +9,7 @@
 #   end
 
 DEMO_MERCHANT_NAMES = [
+  "NexGen",
   "NexGen Innovations",
   "AquaVibe Solutions",
   "TerraGraph Technologies",

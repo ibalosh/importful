@@ -1,13 +1,13 @@
 # Process a file in background and update the status during the process
 class AffiliatesImportProcessingJob < ApplicationJob
   queue_as :default
-  def perform(active_storage_file, merchant_id)
-    filename = active_storage_file.file.filename.to_s
-    file_path = ActiveStorage::Blob.service.path_for(active_storage_file.file.key)
+  def perform(import, merchant_id)
+    filename = import.file.filename.to_s
+    import_file_path = ActiveStorage::Blob.service.path_for(import.file.key)
 
     begin
-      Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{active_storage_file.id}"
-      active_storage_file.update!(status: "processing", filename: filename)
+      Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{import.id}"
+      import.update!(status: "processing", filename: filename)
 
       merchant_mapping = Merchant.where(id: merchant_id).pluck(:slug, :id).to_h
 
@@ -15,25 +15,21 @@ class AffiliatesImportProcessingJob < ApplicationJob
         CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] }),
         DataFormatter.new(AffiliateImportConfig.fetch(:data_formatting_details)),
         DataTransformer.new(from_key: :merchant_slug, to_key: :merchant_id)
-      ).call(file_path, merchant_mapping)
+      ).call(import_file_path, import.id, merchant_mapping)
 
-      result_status = result[:status]
+      records = result.fetch(:records)
 
-      # we could have just passed the result_status to the update! method,
-      # but we are doing it this way to make it clear what is being updated and the error is thrown if the shape
-      # of the result is not as expected
-      active_storage_file.update!(
-        total_records: result_status.fetch(:total_records),
-        processed_records: result_status.fetch(:processed_records),
-        not_processed_records: result_status.fetch(:not_processed_records),
-        status: result_status.fetch(:status)
+      import.update!(
+        total_records: records.fetch(:total),
+        processed_records: records.fetch(:processed),
+        not_processed_records: records.fetch(:not_processed),
+        status: result.fetch(:status)
       )
-      Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{active_storage_file.id}"
+      Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{import.id}"
 
-    # Make sure to log the errors
     rescue StandardError => e
-      active_storage_file.update(status: "failed")
-      Rails.logger.error "CSV processing started for Affiliate Active Storage file with ID: #{active_storage_file.id} - #{e.message}"
+      import.update(status: "failed")
+      Rails.logger.error "CSV processing started for Affiliate Active Storage file with ID: #{import.id} - #{e.message}"
       raise e
     end
   end

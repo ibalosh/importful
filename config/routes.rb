@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "import_details/index"
   get "sign_ups/new"
   get "sign_ups/create"
   get "sessions/new"
@@ -6,7 +7,9 @@ Rails.application.routes.draw do
   get "sessions/destroy"
   get "affiliates", to: "affiliates#index"
   get "merchants", to: "merchants#index"
-  resources :imports, only: [ :create, :new, :index ]
+  resources :imports, only: [ :create, :new, :index ] do
+    get "details", to: "import_details#index", as: :import_details
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

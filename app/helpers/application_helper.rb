@@ -11,4 +11,8 @@ module ApplicationHelper
   def active_nav_link(link)
     current_page?(link) ? "active" : ""
   end
+
+  def number_or_dash(value, show)
+    show ? value : "-"
+  end
 end
