@@ -1,0 +1,12 @@
+<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <li class="nav-item">
+    <span class="navbar-text">
+      <%= turbo_frame_tag "merchant" do %>
+        Welcome,&nbsp;
+        <strong>
+          <%= link_to current_user.slug, edit_merchant_path(current_user) %>
+        </strong>
+      <% end %>
+    </span>
+  </li>
+</ul>
