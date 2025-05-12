@@ -6,6 +6,7 @@
         <strong>
           <%= link_to current_user.slug, edit_merchant_path(current_user) %>
         </strong>
+          <%= role_span(current_user.role) %>
       <% end %>
     </span>
   </li>

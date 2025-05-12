@@ -1,5 +1,6 @@
 class Affiliate < ApplicationRecord
   belongs_to :merchant
+  include OwnedByMerchant
 
   validates :first_name, presence: true
   validates :last_name, presence: true

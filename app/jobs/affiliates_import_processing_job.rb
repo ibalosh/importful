@@ -1,7 +1,7 @@
 # Process a file in background and update the status during the process
 class AffiliatesImportProcessingJob < ApplicationJob
   queue_as :default
-  def perform(import, merchant_id)
+  def perform(import, merchant)
     filename = import.file.filename.to_s
     import_file_path = ActiveStorage::Blob.service.path_for(import.file.key)
 
@@ -9,13 +9,11 @@ class AffiliatesImportProcessingJob < ApplicationJob
       Rails.logger.info "CSV processing started for Affiliate Active Storage file with ID: #{import.id}"
       import.update!(status: "processing", filename: filename)
 
-      merchant_mapping = Merchant.where(id: merchant_id).pluck(:slug, :id).to_h
-
       result = AffiliateImportService.new(
         CsvDataProcessor.new(options: { required_keys: AffiliateImportConfig[:required_headers] }),
         DataFormatter.new(AffiliateImportConfig.fetch(:data_formatting_details)),
         DataTransformer.new(from_key: :merchant_slug, to_key: :merchant_id)
-      ).call(import_file_path, import.id, merchant_mapping)
+      ).call(import_file_path, import.id, Merchant.slug_id_map_for(merchant))
 
       records = result.fetch(:records)
 

@@ -4,6 +4,7 @@
   <thead class="table-info">
   <tr>
     <th>ID</th>
+    <th>Merchant ID</th>
     <th>File</th>
     <th>Upload Errors</th>
     <th>Total Records</th>
@@ -17,6 +18,7 @@
     <% @imports.each do |import| %>
       <tr>
         <td><%= import.id %></td>
+        <td><%= import.merchant_id %></td>
         <td>
           <% if import.filename.nil? %>
             <span class="text-muted">-</span>
