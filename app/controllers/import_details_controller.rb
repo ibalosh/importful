@@ -4,7 +4,7 @@ class ImportDetailsController < ApplicationController
     @import_details = @import.
       import_details.
       order(created_at: :desc).
-      page(params[:page]).
+      page(page_param).
       per(10)
   end
 
@@ -12,5 +12,9 @@ class ImportDetailsController < ApplicationController
 
   def import_id
     params[:import_id]
+  end
+
+  def page_param
+    params[:page]
   end
 end
