@@ -6,7 +6,7 @@
   <td>
     <% if import_detail.payload&.values %>
       <div class="bg-light rounded p-2">
-        payload.values.map { |v| content_tag(:code, v) }.join(', ').html_safe
+        <%= import_detail.payload.values.map { |v| content_tag(:code, v) }.join(', ').html_safe %>
       </div>
     <% else %>
       -

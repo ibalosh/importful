@@ -39,7 +39,7 @@ class AffiliateImportService
   # @param import_id [Integer] the import id
   # @param raw_data [Array<Hash>] the raw data from the CSV file before transformation and formatting
   # @param batch_size [Integer] the size of each batch to insert
-  def bulk_insert(affiliates, import_id, raw_data, batch_size: 30)
+  def bulk_insert(affiliates, import_id, raw_data, batch_size: 50)
     affiliates.each_slice(batch_size).with_index do |batch, batch_index|
       ActiveRecord::Base.transaction do
         batch.each_with_index do |affiliate, index|
