@@ -11,8 +11,10 @@ The app allows you to:
 - **Upload CSV Files** containing affiliate data, for any merchant (if you login as backdoor admin merchant)
 - **Transform and Store** the uploaded data into the database.
 - **Show upload to server progress** - show progress of uploaded file to a server 
-- **Show error details progress** - in case there are errors during csv processing after uploading
+- **Show upload errors** - show errors if there file formatting errors
+- **Show error details progress** - for each row in case there are errors during csv processing after uploading
 - **Inline editing** - for merchant username/slug
+- **Tests coverage** - added tests for the features of the app, with high test coverage
 - Show affiliates list for specific merchant (or for backdoor admin show them all)
 - Show all imports list for specific merchant (or for backdoor admin show them all)
 

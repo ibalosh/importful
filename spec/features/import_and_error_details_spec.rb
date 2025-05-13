@@ -22,99 +22,134 @@ feature "CSV Import and error details", type: :feature, async: false do
     login(merchant.slug, merchant.password)
   end
 
-  it "duplicate merchants" do
-    content = <<~CSV
-      merchant_slug,first_name,last_name,email,website_url,commissions_total
-      merchant-a,John,Doe,john@example.com,https://example.com,100.50
-      merchant-a,John,Doe,john@example.com,https://example.com,100.50
-    CSV
-    filename = "test.csv"
-    csv_file = create_temp_file(filename:, content:)
+  context "incorrect csv content" do
+    it "missing csv headers in the file" do
+      csv_file = create_temp_file(filename: "FILENAME", content: "first_name")
 
-    visit new_import_path
-    attach_file("file", csv_file.path)
-    click_button "Upload and Import"
-    visit imports_path
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
 
-    click_link "check error details", match: :first
-    expect(page).to have_content("Email has already been taken")
+      click_link "check error details", match: :first
+      expect(page).to have_content("missing headers")
+    end
+
+    it "file is binary" do
+      csv_file = create_temp_binary_file(filename: "FILENAME")
+
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
+
+      click_link "check error details", match: :first
+      expect(page).to have_content("please check the file encoding")
+    end
+
+    it "missing csv headers in the file" do
+      csv_file = create_temp_file(filename: "FILENAME", content: "")
+
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
+
+      click_link "check error details", match: :first
+      expect(page).to have_content("file seems to be blank")
+    end
   end
 
-  it "for admin no errors when merchant exists, but in another account" do
-    merchant = create(:merchant, slug: "merchant-b", role: "admin")
+  context "csv content is formatted correctly, but contains invalid content" do
+    it "duplicate merchants" do
+      content = <<~CSV
+        merchant_slug,first_name,last_name,email,website_url,commissions_total
+        merchant-a,John,Doe,john@example.com,https://example.com,100.50
+        merchant-a,John,Doe,john@example.com,https://example.com,100.50
+      CSV
+      csv_file = create_temp_file(filename: "FILENAME", content:)
 
-    logout
-    login(merchant.slug, merchant.password)
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
 
-    content = <<~CSV
-      merchant_slug,first_name,last_name,email,website_url,commissions_total
-      merchant-a,John,Doe,john@example.com,https://example.com,100.50
-    CSV
-    filename = "test.csv"
-    csv_file = create_temp_file(filename:, content:)
+      click_link "check error details", match: :first
+      expect(page).to have_content("Email has already been taken")
+    end
 
-    visit new_import_path
-    attach_file("file", csv_file.path)
-    click_button "Upload and Import"
-    visit imports_path
+    it "for admin no errors when merchant exists, but in another account" do
+      merchant = create(:merchant, slug: "merchant-b", role: "admin")
 
-    expect(page).not_to have_content("check error details")
-  end
+      logout
+      login(merchant.slug, merchant.password)
 
-  it "merchant exists, but in another account" do
-    create(:merchant, slug: "merchant-b", role: "admin")
+      content = <<~CSV
+        merchant_slug,first_name,last_name,email,website_url,commissions_total
+        merchant-a,John,Doe,john@example.com,https://example.com,100.50
+      CSV
+      csv_file = create_temp_file(filename: "FILENAME", content:)
 
-    content = <<~CSV
-      merchant_slug,first_name,last_name,email,website_url,commissions_total
-      merchant-b,John,Doe,john@example.com,https://example.com,100.50
-    CSV
-    filename = "test.csv"
-    csv_file = create_temp_file(filename:, content:)
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
 
-    visit new_import_path
-    attach_file("file", csv_file.path)
-    click_button "Upload and Import"
-    visit imports_path
+      expect(page).not_to have_content("check error details")
+    end
 
-    click_link "check error details", match: :first
-    expect(page).to have_content("Merchant must exist")
-  end
+    it "merchant exists, but in another account" do
+      create(:merchant, slug: "merchant-b", role: "admin")
 
-  it "non existing merchants" do
-    content = <<~CSV
-      merchant_slug,first_name,last_name,email,website_url,commissions_total
-      merchant-non-existing,John,Doe,john@example.com,https://example.com,100.50
-    CSV
-    filename = "test.csv"
-    csv_file = create_temp_file(filename:, content:)
+      content = <<~CSV
+        merchant_slug,first_name,last_name,email,website_url,commissions_total
+        merchant-b,John,Doe,john@example.com,https://example.com,100.50
+      CSV
+      csv_file = create_temp_file(filename: "FILENAME", content:)
 
-    visit new_import_path
-    attach_file("file", csv_file.path)
-    click_button "Upload and Import"
-    visit imports_path
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
 
-    click_link "check error details", match: :first
-    expect(page).to have_content("Merchant must exist")
-  end
+      click_link "check error details", match: :first
+      expect(page).to have_content("Merchant must exist")
+    end
 
-  it "invalid fields merchants" do
-    content = <<~CSV
-      merchant_slug,first_name,last_name,email,website_url,commissions_total
-      merchant-a,,,john@example.com,https://example.com,100.50
-    CSV
-    filename = "test.csv"
-    csv_file = create_temp_file(filename:, content:)
+    it "non existing merchants" do
+      content = <<~CSV
+        merchant_slug,first_name,last_name,email,website_url,commissions_total
+        merchant-non-existing,John,Doe,john@example.com,https://example.com,100.50
+      CSV
+      csv_file = create_temp_file(filename: "FILENAME", content:)
 
-    visit new_import_path
-    attach_file("file", csv_file.path)
-    click_button "Upload and Import"
-    visit imports_path
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
 
-    click_link "check error details", match: :first
+      click_link "check error details", match: :first
+      expect(page).to have_content("Merchant must exist")
+    end
 
-    aggregate_failures do
-      expect(page).to have_content("First name can't be blank")
-      expect(page).to have_content("Last name can't be blank")
+    it "invalid fields merchants" do
+      content = <<~CSV
+        merchant_slug,first_name,last_name,email,website_url,commissions_total
+        merchant-a,,,john@example.com,https://example.com,100.50
+      CSV
+      csv_file = create_temp_file(filename: "FILENAME", content:)
+
+      visit new_import_path
+      attach_file("file", csv_file.path)
+      click_button "Upload and Import"
+      visit imports_path
+
+      click_link "check error details", match: :first
+
+      aggregate_failures do
+        expect(page).to have_content("First name can't be blank")
+        expect(page).to have_content("Last name can't be blank")
+      end
     end
   end
 end
