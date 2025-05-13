@@ -54,9 +54,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_104818) do
 
   create_table "import_details", force: :cascade do |t|
     t.integer "import_id", null: false
-    t.integer "row_number", null: false
+    t.integer "row_number"
     t.json "error_messages", default: [], null: false
-    t.json "payload", default: "", null: false
+    t.json "payload", default: ""
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["import_id"], name: "index_import_details_on_import_id"

@@ -73,6 +73,7 @@ group :development, :test do
   # For feature testing, will use Capybara with Selenium driver
   gem "capybara", "~> 3.40"
   gem "selenium-webdriver", "~> 4.29"
+  gem "simplecov", require: false
 end
 
 group :development do

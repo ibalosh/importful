@@ -25,7 +25,8 @@ class AffiliateImportService
     result[:status] = :finished
     result
   rescue DataProcessorError => e
-    Rails.logger.error("Failed to parse file: #{e.message}")
+    insert_import_details_record(import_id:, row_number: nil, errors: e.message, payload: nil)
+    Rails.logger.error("Failed to process file: #{e.message}")
     result[:status] = :failed
     result
   end
@@ -68,7 +69,7 @@ class AffiliateImportService
   end
 
   def insert_import_details_record(import_id:, row_number:, errors:, payload:)
-    ImportDetail.create!(import_id: import_id, row_number:, error_messages: errors.as_json, payload:)
+    ImportDetail.create!(import_id: import_id, row_number:, error_messages: Array.wrap(errors).as_json, payload:)
   rescue ActiveRecord::ActiveRecordError => e
     Rails.logger.error("Failed to insert affiliates: #{e.message}")
   end
