@@ -1,6 +1,11 @@
 class ImportsController < ApplicationController
   def index
     @pagy, @imports = pagy(Import.for_merchant(current_user).order(created_at: :desc))
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
   def create
     return unless uploaded_file_is_valid

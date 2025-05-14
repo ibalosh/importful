@@ -1,0 +1,7 @@
+<%= turbo_stream.append "imports" do %>
+  <%= render partial: "import", collection: @imports %>
+<% end %>
+
+<%= turbo_stream.update "load_more" do %>
+  <%= render "shared/load_more" %>
+<% end %>
