@@ -14,35 +14,9 @@
     <th>Imported At</th>
   </tr>
   </thead>
-  <tbody>
-    <% @imports.each do |import| %>
-      <tr>
-        <td><%= import.id %></td>
-        <td><%= import.merchant_id %></td>
-        <td>
-          <% if import.filename.nil? %>
-            <span class="text-muted">-</span>
-          <% else %>
-            <%= link_to import.filename.truncate(20), import.file %>
-          <% end %>
-        </td>
-        <td>
-          <% if import.import_details.present? %>
-            <%= link_to "check error details", import_import_details_path(import) %>
-          <% else %>
-            <span class="text-muted">-</span>
-          <% end %>
-        </td>
-        <td><%= number_or_dash(import.total_records, import.finished?) %></td>
-        <td><%= number_or_dash(import.processed_records, import.finished?) %></td>
-        <td><%= number_or_dash(import.not_processed_records, import.finished?) %></td>
-        <td class="text-center">
-          <%= import_status_badge(import.status) %>
-        </td>
-        <td><%= import.created_at.strftime("%Y-%m-%d %H:%M") %></td>
-      </tr>
-    <% end %>
+  <tbody id="imports">
+    <%= render @imports %>
   </tbody>
 </table>
 
-<%= render partial: "shared/pagination" %>
+<%= render "shared/load_more" %>

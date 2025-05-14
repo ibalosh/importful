@@ -1,0 +1,9 @@
+<div id="load_more">
+  <% if @pagy.next.present? %>
+    <%= link_to "Load more",
+      imports_path(page: @pagy.next),
+      class: "btn btn-primary mt-4",
+      data: { turbo_stream: true }
+    %>
+  <% end %>
+</div>
