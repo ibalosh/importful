@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
 
     if @merchant&.authenticate(merchant_params[:password])
       set_user_session(@merchant&.id)
-      redirect_to imports_path, notice: "Signed in successfully"
+      redirect_to new_import_path, notice: "Signed in successfully"
     else
       flash.now[:alert] = "Invalid email or password"
       render :new, status: :unprocessable_content
