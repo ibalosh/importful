@@ -1,12 +1,20 @@
 class ImportsController < ApplicationController
   def index
-    @pagy, @imports = pagy(Import.for_merchant(current_user).order(created_at: :desc))
+    # include check whether errors exist to get rid of n+1 query
+    import_details_query = "imports.*, EXISTS (SELECT 1 FROM import_details WHERE " \
+      "import_details.import_id = imports.id) AS has_import_details"
+
+    @pagy, @imports = pagy(Import.for_merchant(current_user).
+      includes(file_attachment: :blob).
+      select(import_details_query).
+      order(created_at: :desc))
 
     respond_to do |format|
       format.html
       format.turbo_stream
     end
   end
+
   def create
     return unless uploaded_file_is_valid
 
