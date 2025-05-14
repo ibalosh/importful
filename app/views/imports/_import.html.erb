@@ -9,7 +9,7 @@
     <% end %>
   </td>
   <td>
-    <% unless import.has_import_details == 0%>
+    <% if import.import_details.present?%>
       <%= link_to "check error details", import_import_details_path(import) %>
     <% else %>
       <span class="text-muted">-</span>
