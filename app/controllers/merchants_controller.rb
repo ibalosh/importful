@@ -11,7 +11,7 @@ class MerchantsController < ApplicationController
     end
   end
   def index
-    @merchants = Merchant.order(created_at: :desc).page(params[:page]).per(10)
+    @pagy, @merchants = pagy(Merchant.order(created_at: :desc))
   end
 
   private

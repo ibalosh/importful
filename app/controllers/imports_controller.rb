@@ -1,10 +1,6 @@
 class ImportsController < ApplicationController
   def index
-    @imports = Import.
-      for_merchant(current_user).
-      order(created_at: :desc).
-      page(params[:page]).
-      per(10)
+    @pagy, @imports = pagy(Import.for_merchant(current_user).order(created_at: :desc))
   end
   def create
     return unless uploaded_file_is_valid
