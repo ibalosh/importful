@@ -18,9 +18,6 @@ The app allows you to:
 - Show affiliates list for specific merchant (or for backdoor admin show them all)
 - Show all imports list for specific merchant (or for backdoor admin show them all)
 
-The app processes the uploaded CSV files, validates the data, and stores it in a structured format for further use.
-To play with this task, active storage, hotwire (stimulus, turbo frame/stream) were used. 
-
 The initial task for this app can be found [here](TASK.md).
 
 <p align="center">

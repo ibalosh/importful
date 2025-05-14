@@ -1,5 +1,4 @@
 <h2 class="mb-4">File import error details</h2>
-<%= turbo_stream_from [@import, :import_details] %>
 
 <div class="table-responsive">
   <table class="table table-hover table-bordered align-middle">
@@ -10,8 +9,10 @@
       <th>Payload</th>
     </tr>
     </thead>
-    <tbody id="import_details">
+    <tbody>
       <%= render @import_details %>
     </tbody>
   </table>
+
+  <%= paginate @import_details, theme: 'bootstrap-5' %>
 </div>
